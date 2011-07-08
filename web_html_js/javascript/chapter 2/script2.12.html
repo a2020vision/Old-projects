@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>script 2.12 - plugin list</title>
+</head>
+<body>
+<script type="text/javascript">
+if(navigator.plugins && navigator.plugins.length > 0) {
+	document.write("<h2>You have the following plugins:</h2><table border=1>")
+	document.write("<tr><th>Name</th><th>File name</th><th>Description</th></tr>")
+	for (i=0; i<navigator.plugins.length; i++) {
+		thisPlugin=navigator.plugins[i]
+		document.write("<tr><td>",thisPlugin.name,"</td><td>",thisPlugin.filename,"</td><td>",thisPlugin.description,"</td></tr>")
+	}
+	document.write("</table>")
+}
+</script>
+</body></html>

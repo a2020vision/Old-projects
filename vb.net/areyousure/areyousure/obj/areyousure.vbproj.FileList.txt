@@ -1,0 +1,10 @@
+obj\Debug\areyousure.exe
+obj\Debug\areyousure.xml
+obj\Debug\areyousure.pdb
+bin\Debug\areyousure.exe
+bin\Debug\areyousure.pdb
+bin\Debug\areyousure.xml
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\areyousure.Form1.resources
+obj\Debug\areyousure.Resources.resources
+obj\Debug\areyousure.vbproj.GenerateResource.Cache

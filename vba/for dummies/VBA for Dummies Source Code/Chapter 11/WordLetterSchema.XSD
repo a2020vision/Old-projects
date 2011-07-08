@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ targetNamespace="http://www.mysite.com"
+ xmlns="http://www.mysite.com"
+ elementFormDefault="qualified">
+
+<xs:element name="MyLetter">
+	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element name="FromAddress" type="xs:string"/>
+			<xs:element name="Sent" type="xs:string"/>
+			<xs:element name="ToName" type="xs:string"/>
+			<xs:element name="ToCompany" type="xs:string"/>
+			<xs:element name="ToAddress" type="xs:string"/>
+			<xs:element name="ToCity" type="xs:string"/>
+			<xs:element name="ToState" type="xs:string"/>
+			<xs:element name="ToZIP" type="xs:string"/>
+			<xs:element name="Greeting" type="xs:string"/>
+			<xs:element name="Body" type="xs:string" maxOccurs="unbounded"/>
+			<xs:element name="Closing" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+</xs:schema>

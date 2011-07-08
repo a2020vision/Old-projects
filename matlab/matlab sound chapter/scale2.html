@@ -1,0 +1,335 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>scale2</title>
+      <meta name="generator" content="MATLAB 7.6">
+      <meta name="date" content="2010-09-20">
+      <meta name="m-file" content="scale2"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+<h1>Scale2.m</h1>
+<p>Below is my matlab function, scale2.m, that plays a musical scale. To download it, 
+use this link: <a href="scale2.m">scale2.m</a> (right-click and select "save link" or equivalent 
+to download; just click on it to see plain text).</p>
+      <div class="content"><pre class="codeinput"><span class="keyword">function</span> scale2
+<span class="comment">% function to play a scale using a revised/cleaned-up method.</span>
+
+<span class="comment">% The main function, scale2, defines the necessary variables and builds a</span>
+<span class="comment">% vector with individual notes, which it then plays with Matlab's sound()</span>
+<span class="comment">% function. The individual notes are returned as vectors from the function</span>
+<span class="comment">% tone(), defined below.</span>
+
+<span class="comment">% tone() accepts two variables - time and pitch. time is the duration or</span>
+<span class="comment">% length that the tone we want to return should last, in seconds. pitch is</span>
+<span class="comment">% the pitch that we want the tone to be in, as a number relative to A 440.</span>
+<span class="comment">% For example, the Ab below would be -1, the Bb above would be +1, the C</span>
+<span class="comment">% above would be +3, etc. A full table of the chromatic scale between</span>
+<span class="comment">% middle C and the C above:</span>
+
+<span class="comment">% C (high):   +3</span>
+<span class="comment">% B:          +2</span>
+<span class="comment">% Bb:         +1</span>
+<span class="comment">% A (440):    0</span>
+<span class="comment">% Ab:         -1</span>
+<span class="comment">% G:          -2</span>
+<span class="comment">% F#:         -3</span>
+<span class="comment">% F:          -4</span>
+<span class="comment">% E:          -5</span>
+<span class="comment">% Eb:         -6</span>
+<span class="comment">% D:          -7</span>
+<span class="comment">% C#:         -8</span>
+<span class="comment">% C (middle): -9</span>
+
+<span class="comment">% I will explain how this works inside the tone() function.</span>
+
+<span class="comment">% define our "global constant":</span>
+<span class="keyword">global</span> sf
+
+<span class="comment">% give it a value:</span>
+sf=44100;
+
+<span class="comment">% believe it or not, we're done with the early set-up now, and ready to</span>
+<span class="comment">% start building a matrix. to make this clear, let's define a</span>
+<span class="comment">% note-duration: say, a half-note, at half a second:</span>
+
+half=0.5;
+
+<span class="comment">% now we can build the matrix. For clarity, I'm doing individual notes:</span>
+C=tone(half,-9);
+D=tone(half,-7);
+E=tone(half,-5);
+F=tone(half,-4);
+G=tone(half,-2);
+A=tone(half,0);
+B=tone(half,2);
+C2=tone(half,3);
+
+<span class="comment">% Next, let's smash them all into one matrix:</span>
+y=[C D E F G A B C2];
+
+<span class="comment">% and now, the moment you've all been waiting for:</span>
+sound(y,sf);
+
+<span class="comment">% That's all.</span>
+
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> tone=tone(time,pitch)
+<span class="comment">% function tone returns a vector</span>
+<span class="comment">% with sound that should last "time" seconds</span>
+<span class="comment">% at a frequency of "f" - relative to A 440.</span>
+
+<span class="comment">% this should work for any scalar real value of pitch, but I strongly</span>
+<span class="comment">% recommend using scalar values, since nonscalars will probably sound weird</span>
+
+<span class="comment">% first we'll need our sound frequency:</span>
+<span class="keyword">global</span> sf
+
+<span class="comment">% another important value is the frequency of A:</span>
+A=440; <span class="comment">% this should be an easy variable name to remember, right?</span>
+
+<span class="comment">% next, I'd like to get the exact frequency that we'll be using, and put it</span>
+<span class="comment">% into a more usable form. This is done by taking the "pitch" value, and</span>
+<span class="comment">% transforming it to a frequency value. We can do this absolutely, since</span>
+<span class="comment">% our pitches are defined relative to A, and we have a set value for the</span>
+<span class="comment">% frequency of A:</span>
+freq=A*2^(pitch/12);
+
+<span class="comment">% How exactly does this work? you may ask. Well, we know that the A an</span>
+<span class="comment">% octave above our A has twice the frequency (2*A). We also know there are</span>
+<span class="comment">% twelve chromatic "steps" to get there (actually half-steps). Each step</span>
+<span class="comment">% has a frequency of 2*(1/12)*(frequency of the pitch below). It's simple</span>
+<span class="comment">% math to see that you can find the frequency of any note using this</span>
+<span class="comment">% equation based on its displacement from a pitch whose frequency you</span>
+<span class="comment">% already know, and this is the equation you end up with.</span>
+
+<span class="comment">% we also want to worry time. Time is a funny thing, and in this case it's</span>
+<span class="comment">% kind of relative to sf. That is to say: we will want to return a vector</span>
+<span class="comment">% of sound, with each increment along that vector representing sound</span>
+<span class="comment">% amplitude at a given time; and how big those increments should be in</span>
+<span class="comment">% terms of time, depends on the sound frequency. The length of these</span>
+<span class="comment">% increments is, in fact, 1/sf. Now, as it happens I plan to make a vector</span>
+<span class="comment">% with the time values first, and I do this thusly:</span>
+t=0:(1/sf):time;
+
+<span class="comment">% that wasn't too hard, was it?</span>
+
+<span class="comment">% Generating the actual tone is deceptively simple. We do it with a sine</span>
+<span class="comment">% wave at the given frequency:</span>
+
+tone=sin(2*pi*freq*t);
+
+<span class="comment">% to the unintiated, this may seem to return a scalar value. You would,</span>
+<span class="comment">% however, be forgetting that t is a vector. Now, I know that for clarity</span>
+<span class="comment">% I'd normally do this in a for-loop, and in fact the first time I put this</span>
+<span class="comment">% together, that's what I did. It would look something like this:</span>
+<span class="comment">%</span>
+<span class="comment">% for ii=1:length(t)</span>
+<span class="comment">%     tone(ii)=sin(2*pi*freq*t(ii));</span>
+<span class="comment">% end</span>
+<span class="comment">%</span>
+<span class="comment">% However, I quickly found that, at any decent sf, this took FOREVER to</span>
+<span class="comment">% run, because it was running through MILLIONS of ii's. The single-line</span>
+<span class="comment">% version above takes advantage of Matlab's matrix math roots, and</span>
+<span class="comment">% calculates everything so much quicker, so quick, you wouldn't even</span>
+<span class="comment">% believe.</span>
+
+<span class="comment">% and that's all I have to say about that.</span>
+<span class="keyword">end</span>
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.6<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+function scale2
+% function to play a scale using a revised/cleaned-up method.
+
+% The main function, scale2, defines the necessary variables and builds a
+% vector with individual notes, which it then plays with Matlab's sound()
+% function. The individual notes are returned as vectors from the function
+% tone(), defined below.
+
+% tone() accepts two variables - time and pitch. time is the duration or
+% length that the tone we want to return should last, in seconds. pitch is 
+% the pitch that we want the tone to be in, as a number relative to A 440. 
+% For example, the Ab below would be -1, the Bb above would be +1, the C 
+% above would be +3, etc. A full table of the chromatic scale between 
+% middle C and the C above:
+
+% C (high):   +3
+% B:          +2
+% Bb:         +1
+% A (440):    0
+% Ab:         -1
+% G:          -2
+% F#:         -3
+% F:          -4
+% E:          -5
+% Eb:         -6
+% D:          -7
+% C#:         -8
+% C (middle): -9
+
+% I will explain how this works inside the tone() function.
+
+% define our "global constant":
+global sf
+
+% give it a value:
+sf=44100;
+
+% believe it or not, we're done with the early set-up now, and ready to
+% start building a matrix. to make this clear, let's define a
+% note-duration: say, a half-note, at half a second:
+
+half=0.5;
+
+% now we can build the matrix. For clarity, I'm doing individual notes:
+C=tone(half,-9);
+D=tone(half,-7);
+E=tone(half,-5);
+F=tone(half,-4);
+G=tone(half,-2);
+A=tone(half,0);
+B=tone(half,2);
+C2=tone(half,3);
+
+% Next, let's smash them all into one matrix:
+y=[C D E F G A B C2];
+
+% and now, the moment you've all been waiting for:
+sound(y,sf);
+
+% That's all.
+
+end
+
+function tone=tone(time,pitch)
+% function tone returns a vector 
+% with sound that should last "time" seconds
+% at a frequency of "f" - relative to A 440.
+
+% this should work for any scalar real value of pitch, but I strongly
+% recommend using scalar values, since nonscalars will probably sound weird
+
+% first we'll need our sound frequency:
+global sf
+
+% another important value is the frequency of A:
+A=440; % this should be an easy variable name to remember, right?
+
+% next, I'd like to get the exact frequency that we'll be using, and put it
+% into a more usable form. This is done by taking the "pitch" value, and
+% transforming it to a frequency value. We can do this absolutely, since
+% our pitches are defined relative to A, and we have a set value for the
+% frequency of A:
+freq=A*2^(pitch/12);
+
+% How exactly does this work? you may ask. Well, we know that the A an
+% octave above our A has twice the frequency (2*A). We also know there are
+% twelve chromatic "steps" to get there (actually half-steps). Each step 
+% has a frequency of 2*(1/12)*(frequency of the pitch below). It's simple
+% math to see that you can find the frequency of any note using this
+% equation based on its displacement from a pitch whose frequency you
+% already know, and this is the equation you end up with.
+
+% we also want to worry time. Time is a funny thing, and in this case it's
+% kind of relative to sf. That is to say: we will want to return a vector
+% of sound, with each increment along that vector representing sound
+% amplitude at a given time; and how big those increments should be in
+% terms of time, depends on the sound frequency. The length of these
+% increments is, in fact, 1/sf. Now, as it happens I plan to make a vector
+% with the time values first, and I do this thusly:
+t=0:(1/sf):time;
+
+% that wasn't too hard, was it?
+
+% Generating the actual tone is deceptively simple. We do it with a sine
+% wave at the given frequency:
+
+tone=sin(2*pi*freq*t);
+
+% to the unintiated, this may seem to return a scalar value. You would,
+% however, be forgetting that t is a vector. Now, I know that for clarity
+% I'd normally do this in a for-loop, and in fact the first time I put this
+% together, that's what I did. It would look something like this:
+% 
+% for ii=1:length(t)
+%     tone(ii)=sin(2*pi*freq*t(ii));
+% end
+%
+% However, I quickly found that, at any decent sf, this took FOREVER to
+% run, because it was running through MILLIONS of ii's. The single-line
+% version above takes advantage of Matlab's matrix math roots, and
+% calculates everything so much quicker, so quick, you wouldn't even
+% believe.
+
+% and that's all I have to say about that.
+end
+##### SOURCE END #####
+-->
+   </body>
+</html>

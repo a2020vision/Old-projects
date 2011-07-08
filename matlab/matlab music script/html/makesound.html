@@ -1,0 +1,477 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>makesound</title>
+      <meta name="generator" content="MATLAB 7.6">
+      <meta name="date" content="2010-12-20">
+      <meta name="m-file" content="makesound"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content"><pre class="codeinput"><span class="keyword">function</span> makesound
+<span class="comment">% function to make music based on a user's input. Right now it only does</span>
+<span class="comment">% notes on the C major scale.</span>
+
+<span class="comment">% tone() accepts two variables - time and pitch. time is the duration or</span>
+<span class="comment">% length that the tone we want to return should last, in seconds. pitch is</span>
+<span class="comment">% the pitch that we want the tone to be in, as a number relative to A 440.</span>
+<span class="comment">% For example, the Ab below would be -1, the Bb above would be +1, the C</span>
+<span class="comment">% above would be +3, etc. A full table of the chromatic scale between</span>
+<span class="comment">% middle C and the C above:</span>
+
+<span class="comment">% C (high):   +3</span>
+<span class="comment">% B:          +2</span>
+<span class="comment">% Bb:         +1</span>
+<span class="comment">% A (440):    0</span>
+<span class="comment">% Ab:         -1</span>
+<span class="comment">% G:          -2</span>
+<span class="comment">% F#:         -3</span>
+<span class="comment">% F:          -4</span>
+<span class="comment">% E:          -5</span>
+<span class="comment">% Eb:         -6</span>
+<span class="comment">% D:          -7</span>
+<span class="comment">% C#:         -8</span>
+<span class="comment">% C (middle): -9</span>
+
+<span class="comment">% I will explain how this works inside the tone() function.</span>
+
+<span class="comment">% welcome message:</span>
+disp(<span class="string">'Welcome to Nick Leep''s Sound Maker'</span>)
+disp(<span class="string">'(c) 2011'</span>)
+
+
+<span class="comment">% define our "global constant":</span>
+<span class="keyword">global</span> Fs
+
+<span class="comment">% give it a value:</span>
+Fs=44100;
+
+<span class="comment">% believe it or not, we're done with the early set-up now, and ready to</span>
+<span class="comment">% start building a matrix. to make this clear, let's define a</span>
+<span class="comment">% note-duration: say, a half-note, at half a second:</span>
+
+half=0.5;
+
+<span class="comment">% now we get the string that we'd like to convert:</span>
+storedString=input(<span class="string">'Please enter the string to play: '</span>,<span class="string">'s'</span>);
+
+<span class="comment">% we need to check to see if the string is numeric, and if so, make it a</span>
+<span class="comment">% string:</span>
+<span class="keyword">if</span> isnumeric(storedString)
+    storedString=num2str(storedString);
+<span class="keyword">end</span>
+
+<span class="comment">% next, since there are 8 notes in the scale, convert that string to octal</span>
+<span class="comment">% (a numeric display format that only has 8 digits, instead of 10):</span>
+octalRep=sprintf(<span class="string">'%o'</span>,storedString);
+
+
+<span class="comment">% Ok, so now we need to do a different kind of thing: we need to convert</span>
+<span class="comment">% each digit in ocatlRep to a note. This is done by converting each digit</span>
+<span class="comment">% on octalRep to somewhere on the note-tone chart. For right now, I'm doing</span>
+<span class="comment">% this with a clumsy bit of code, but in the future I hope to come up with</span>
+<span class="comment">% a better algorithm:</span>
+
+noteTones=zeros(1,length(octalRep+2));
+noteTones(1)=-9; <span class="comment">% make the first note middle C</span>
+<span class="comment">% noteTones(1, length(noteTones)) = -9; % make the last note middle C</span>
+
+<span class="keyword">for</span> iter=2:(length(octalRep))
+    temp=str2num(octalRep(iter));
+    <span class="keyword">switch</span> temp
+        <span class="keyword">case</span> 0
+            noteTones(1,iter)=-9; <span class="comment">% middle C</span>
+        <span class="keyword">case</span> 1
+            noteTones(1,iter)=-7; <span class="comment">% D</span>
+        <span class="keyword">case</span> 2 <span class="comment">% E</span>
+            noteTones(1,iter)=-5;
+        <span class="keyword">case</span> 3 <span class="comment">% F</span>
+            noteTones(1,iter)=-4;
+        <span class="keyword">case</span> 4 <span class="comment">% G</span>
+            noteTones(1,iter) = -2;
+        <span class="keyword">case</span> 5 <span class="comment">% A</span>
+            noteTones(1,iter) = 0;
+        <span class="keyword">case</span> 6 <span class="comment">% B</span>
+            noteTones(1,iter) = 2;
+        <span class="keyword">case</span> 7 <span class="comment">% high C</span>
+            noteTones(1,iter) = 3;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+noteTones(1,length(noteTones)+1) = -9;
+<span class="comment">% finally, I want to put all of these into a vector y. This is also done</span>
+<span class="comment">% with a kind of clumsy bit of code I hope to improve:</span>
+y=tone(half,noteTones(1));
+len=length(y);
+<span class="keyword">for</span> iter=2:length(noteTones)
+    y((len*(iter-1)+1):(len*iter))=tone(half,noteTones(iter));
+<span class="keyword">end</span>
+
+
+disp(<span class="string">'playing'</span>)
+sound(y,Fs);
+iter=1;
+<span class="keyword">while</span> iter
+	choice=input(<span class="string">'Would you like to save this as an audio file? (y or n): '</span>,<span class="string">'s'</span>);
+	<span class="keyword">switch</span> choice
+		<span class="keyword">case</span> {<span class="string">'y'</span> <span class="string">'Y'</span> <span class="string">'yes'</span> <span class="string">'Yes'</span>}
+			<span class="comment">% stuff</span>
+			disp(<span class="string">'File will save as a MS Wave (.wav) file.'</span>)
+			filename=input(<span class="string">'File to save it as: '</span>,<span class="string">'s'</span>);
+			filename=[filename <span class="string">'.wav'</span>];
+			wavwrite(y,Fs,filename);
+            saveLocation=[cd <span class="string">'/'</span> filename];
+            disp([<span class="string">'File saved in '</span> saveLocation])
+			iter=0;
+			<span class="keyword">break</span>
+		<span class="keyword">case</span> {<span class="string">'n'</span> <span class="string">'N'</span>}
+			iter=0;
+			<span class="keyword">break</span>
+		<span class="keyword">otherwise</span>
+			disp(<span class="string">'Not a valid choice!'</span>)
+	<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+
+<span class="comment">% filename=input('File to save it as: ','s');</span>
+<span class="comment">% wavwrite(y,Fs,filename);</span>
+<span class="comment">% disp('hello')</span>
+<span class="comment">% That's all.</span>
+
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> Y=tone(time,pitch)
+<span class="comment">% function tone returns a vector</span>
+<span class="comment">% with sound that should last "time" seconds</span>
+<span class="comment">% at a frequency of "f" - relative to A 440.</span>
+
+<span class="comment">% this should work for any scalar real value of pitch, but I strongly</span>
+<span class="comment">% recommend using scalar values, since nonscalars will probably sound weird</span>
+
+<span class="comment">% first we'll need our sound frequency:</span>
+<span class="keyword">global</span> Fs
+
+<span class="comment">% another important value is the frequency of A:</span>
+A=440; <span class="comment">% this should be an easy variable name to remember, right?</span>
+
+<span class="comment">% next, I'd like to get the exact frequency that we'll be using, and put it</span>
+<span class="comment">% into a more usable form. This is done by taking the "pitch" value, and</span>
+<span class="comment">% transforming it to a frequency value. We can do this absolutely, since</span>
+<span class="comment">% our pitches are defined relative to A, and we have a set value for the</span>
+<span class="comment">% frequency of A:</span>
+freq=A*2^(pitch/12);
+
+<span class="comment">% How exactly does this work? you may ask. Well, we know that the A an</span>
+<span class="comment">% octave above our A has twice the frequency (2*A). We also know there are</span>
+<span class="comment">% twelve chromatic "steps" to get there (actually half-steps). Each step</span>
+<span class="comment">% has a frequency of 2*(1/12)*(frequency of the pitch below). It's simple</span>
+<span class="comment">% math to see that you can find the frequency of any note using this</span>
+<span class="comment">% equation based on its displacement from a pitch whose frequency you</span>
+<span class="comment">% already know, and this is the equation you end up with.</span>
+
+<span class="comment">% we also want to worry time. Time is a funny thing, and in this case it's</span>
+<span class="comment">% kind of relative to Fs. That is to say: we will want to return a vector</span>
+<span class="comment">% of sound, with each increment along that vector representing sound</span>
+<span class="comment">% amplitude at a given time; and how big those increments should be in</span>
+<span class="comment">% terms of time, depends on the sound frequency. The length of these</span>
+<span class="comment">% increments is, in fact, 1/Fs. Now, as it happens I plan to make a vector</span>
+<span class="comment">% with the time values first, and I do this thusly:</span>
+t=0:(1/Fs):time;
+
+<span class="comment">% that wasn't too hard, was it?</span>
+
+<span class="comment">% Generating the actual tone is deceptively simple. We do it with a sine</span>
+<span class="comment">% wave at the given frequency:</span>
+
+Y=sin(2*pi*freq*t);
+
+<span class="comment">% to the unintiated, this may seem to return a scalar value. You would,</span>
+<span class="comment">% however, be forgetting that t is a vector. Now, I know that for clarity</span>
+<span class="comment">% I'd normally do this in a for-loop, and in fact the first time I put this</span>
+<span class="comment">% together, that's what I did. It would look something like this:</span>
+<span class="comment">%</span>
+<span class="comment">% for ii=1:length(t)</span>
+<span class="comment">%     tone(ii)=sin(2*pi*freq*t(ii));</span>
+<span class="comment">% end</span>
+<span class="comment">%</span>
+<span class="comment">% However, I quickly found that, at any decent Fs, this took FOREVER to</span>
+<span class="comment">% run, because it was running through MILLIONS of ii's. The single-line</span>
+<span class="comment">% version above takes advantage of Matlab's matrix math roots, and</span>
+<span class="comment">% calculates everything so much quicker, so quick, you wouldn't even</span>
+<span class="comment">% believe.</span>
+
+<span class="comment">% and that's all I have to say about that.</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Welcome to Nick Leep's Sound Maker
+(c) 2011</pre><pre class="codeoutput">Error using ==&gt; input
+Cannot call INPUT from EVALC.
+
+Error in ==&gt; makesound at 46
+storedString=input('Please enter the string to play: ','s');
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.6<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+function makesound
+% function to make music based on a user's input. Right now it only does
+% notes on the C major scale.
+
+% tone() accepts two variables - time and pitch. time is the duration or
+% length that the tone we want to return should last, in seconds. pitch is 
+% the pitch that we want the tone to be in, as a number relative to A 440. 
+% For example, the Ab below would be -1, the Bb above would be +1, the C 
+% above would be +3, etc. A full table of the chromatic scale between 
+% middle C and the C above:
+
+% C (high):   +3
+% B:          +2
+% Bb:         +1
+% A (440):    0
+% Ab:         -1
+% G:          -2
+% F#:         -3
+% F:          -4
+% E:          -5
+% Eb:         -6
+% D:          -7
+% C#:         -8
+% C (middle): -9
+
+% I will explain how this works inside the tone() function.
+
+% welcome message:
+disp('Welcome to Nick Leep''s Sound Maker')
+disp('(c) 2011')
+
+
+% define our "global constant":
+global Fs
+
+% give it a value:
+Fs=44100;
+
+% believe it or not, we're done with the early set-up now, and ready to
+% start building a matrix. to make this clear, let's define a
+% note-duration: say, a half-note, at half a second:
+
+half=0.5;
+
+% now we get the string that we'd like to convert:
+storedString=input('Please enter the string to play: ','s');
+
+% we need to check to see if the string is numeric, and if so, make it a
+% string:
+if isnumeric(storedString)
+    storedString=num2str(storedString);
+end
+
+% next, since there are 8 notes in the scale, convert that string to octal
+% (a numeric display format that only has 8 digits, instead of 10):
+octalRep=sprintf('%o',storedString);
+
+
+% Ok, so now we need to do a different kind of thing: we need to convert
+% each digit in ocatlRep to a note. This is done by converting each digit
+% on octalRep to somewhere on the note-tone chart. For right now, I'm doing
+% this with a clumsy bit of code, but in the future I hope to come up with
+% a better algorithm:
+
+noteTones=zeros(1,length(octalRep+2));
+noteTones(1)=-9; % make the first note middle C
+% noteTones(1, length(noteTones)) = -9; % make the last note middle C
+
+for iter=2:(length(octalRep))
+    temp=str2num(octalRep(iter));
+    switch temp
+        case 0
+            noteTones(1,iter)=-9; % middle C
+        case 1
+            noteTones(1,iter)=-7; % D
+        case 2 % E
+            noteTones(1,iter)=-5; 
+        case 3 % F
+            noteTones(1,iter)=-4;
+        case 4 % G
+            noteTones(1,iter) = -2;
+        case 5 % A
+            noteTones(1,iter) = 0;
+        case 6 % B
+            noteTones(1,iter) = 2;
+        case 7 % high C
+            noteTones(1,iter) = 3;
+    end
+end
+noteTones(1,length(noteTones)+1) = -9;
+% finally, I want to put all of these into a vector y. This is also done
+% with a kind of clumsy bit of code I hope to improve:
+y=tone(half,noteTones(1));
+len=length(y);
+for iter=2:length(noteTones)
+    y((len*(iter-1)+1):(len*iter))=tone(half,noteTones(iter));
+end
+
+
+disp('playing')
+sound(y,Fs);
+iter=1;
+while iter
+	choice=input('Would you like to save this as an audio file? (y or n): ','s');
+	switch choice
+		case {'y' 'Y' 'yes' 'Yes'}
+			% stuff
+			disp('File will save as a MS Wave (.wav) file.')
+			filename=input('File to save it as: ','s');
+			filename=[filename '.wav'];
+			wavwrite(y,Fs,filename);
+            saveLocation=[cd '/' filename];
+            disp(['File saved in ' saveLocation])
+			iter=0;
+			break
+		case {'n' 'N'}
+			iter=0;
+			break
+		otherwise
+			disp('Not a valid choice!')
+	end
+end
+	
+			
+			
+% filename=input('File to save it as: ','s');
+% wavwrite(y,Fs,filename);
+% disp('hello')
+% That's all.
+
+end
+
+function Y=tone(time,pitch)
+% function tone returns a vector 
+% with sound that should last "time" seconds
+% at a frequency of "f" - relative to A 440.
+
+% this should work for any scalar real value of pitch, but I strongly
+% recommend using scalar values, since nonscalars will probably sound weird
+
+% first we'll need our sound frequency:
+global Fs
+
+% another important value is the frequency of A:
+A=440; % this should be an easy variable name to remember, right?
+
+% next, I'd like to get the exact frequency that we'll be using, and put it
+% into a more usable form. This is done by taking the "pitch" value, and
+% transforming it to a frequency value. We can do this absolutely, since
+% our pitches are defined relative to A, and we have a set value for the
+% frequency of A:
+freq=A*2^(pitch/12);
+
+% How exactly does this work? you may ask. Well, we know that the A an
+% octave above our A has twice the frequency (2*A). We also know there are
+% twelve chromatic "steps" to get there (actually half-steps). Each step 
+% has a frequency of 2*(1/12)*(frequency of the pitch below). It's simple
+% math to see that you can find the frequency of any note using this
+% equation based on its displacement from a pitch whose frequency you
+% already know, and this is the equation you end up with.
+
+% we also want to worry time. Time is a funny thing, and in this case it's
+% kind of relative to Fs. That is to say: we will want to return a vector
+% of sound, with each increment along that vector representing sound
+% amplitude at a given time; and how big those increments should be in
+% terms of time, depends on the sound frequency. The length of these
+% increments is, in fact, 1/Fs. Now, as it happens I plan to make a vector
+% with the time values first, and I do this thusly:
+t=0:(1/Fs):time;
+
+% that wasn't too hard, was it?
+
+% Generating the actual tone is deceptively simple. We do it with a sine
+% wave at the given frequency:
+
+Y=sin(2*pi*freq*t);
+
+% to the unintiated, this may seem to return a scalar value. You would,
+% however, be forgetting that t is a vector. Now, I know that for clarity
+% I'd normally do this in a for-loop, and in fact the first time I put this
+% together, that's what I did. It would look something like this:
+% 
+% for ii=1:length(t)
+%     tone(ii)=sin(2*pi*freq*t(ii));
+% end
+%
+% However, I quickly found that, at any decent Fs, this took FOREVER to
+% run, because it was running through MILLIONS of ii's. The single-line
+% version above takes advantage of Matlab's matrix math roots, and
+% calculates everything so much quicker, so quick, you wouldn't even
+% believe.
+
+% and that's all I have to say about that.
+end
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

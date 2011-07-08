@@ -1,0 +1,7 @@
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\bin\Debug\FirstProject.exe
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\bin\Debug\FirstProject.pdb
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\obj\Debug\FirstProject.Properties.Resources.resources
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\obj\Debug\FirstProject.csproj.GenerateResource.Cache
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\obj\Debug\FirstProject.exe
+C:\Documents and Settings\Administrator\My Documents\Dropbox\programming etc\csharp\book\ch1\FirstProject\FirstProject\obj\Debug\FirstProject.pdb

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>script 2.16 - scroller</title>
+<script type="text/javascript">
+myMsg="hello world!"
+i=0
+function scrollMsg() {
+	window.status = myMsg.substring(i,myMsg.length) + myMsg.substring(0,i-1)
+	if (i < myMsg.length) {
+		i++
+	}
+	else {
+		i=0
+	}
+	setTimeout("scrollMsg()",50
+}
+
+
+</script>
+</head>
+<body onLoad="scrollMsg()">
+<h1>hello world.</h1>
+
+
+</body></html>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Root_Element>
+   <!--This is a comment.-->
+   <Element1 Attribute1="This is an attribute.">
+      <ChildElement1>This is a child element.</ChildElement1>
+   </Element1>
+   This is some text.
+   <Element2>This is the second element.</Element2>
+</Root_Element>

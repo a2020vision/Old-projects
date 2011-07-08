@@ -1,0 +1,482 @@
+<!--Nick Leep III
+Example chapter for the matlab book I plan on writing.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Chapter X "Some Cool Examples" - Part Y, "Matlab Music Madness"</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+<h1 id="chapterTitle">Chapter X "Some Cool Examples" - Part Y, "Matlab Music Madness"</h1>
+
+<!--
+This is an example-chapter. It has several purposes:
+-to give me a taste of matlab-book-writing
+-to show readers my way of approaching and solving a problem in Matlab
+-to show off some of Matlab's features
+-explaining some ways in which these features can be used.
+-->
+
+<p>Before you go on: Turn on your computer's sound; set the volume to something 
+moderate, and run the following lines:</p>
+<code>load <span color="pink">handel</span><br />
+sound(y,Fs);
+</code>
+<p>What happens? <em>Hallelujah!</em></p>
+
+<p>Matlab has the ability to process, play, and even synthesize sounds. 
+The synthesis and processing are really just extensions of Matlab's 
+ability to handle (pardon the pun) vectors; the playback and some of the 
+synthesis/processing likely come from Matlab's use in dealing with wave 
+functions (since, after all, that's really what sound is). Anyway, you're 
+not really interested in the history; what you want to know is how to 
+use this really cool feature, right?</p>
+
+<h2 id="soundFunction"><code>Sound()</code> Function</h2>
+<p>The important part, of course, is the function <code>sound()</code>. As usual, 
+I suggest that you go back to your Matlab command prompt, and learn about 
+it the same way you've learned about other functions:</p>
+<code>
+help sound
+</code>
+
+<p>And, as usual, this give us all the information we need... as long as 
+we already know what we're looking for. Anyway, it tells us that you can 
+call <code>sound()</code> like this: <code>sound(y,Fs,bits)</code>. Let 
+me break this down a bit for you.</p>
+<h3 id="parameters">Parameters</h3>
+<p>At the very least, <code>sound()</code> requires one parameter - a vector <code>Y</code>.</p>
+
+<h4 id="y"><code>Y</code></h4>
+<p>There are some requirements on <code>Y</code>. It should be a column vector (row 
+vectors are known to work, too, but to minimize confusion and errors, I 
+suggest using only column vectors). It must have no more than two columns; 
+if it has two columns, sound is played in stereo (assuming, of course, 
+that your computer has stereo sound playback); otherwise, playback is in 
+mono. Finally, the values in <code>Y</code> should range between -1 and 1; values 
+with absolute values greater than 1 are "clipped" to their respective 
+"max" (for example, a value of -2 is clipped to -1 on playback; +1.2 is 
+replaced with +1; etc). While this is not strictly required, I highly 
+recommend that you keep this in mind - "clipping" the vector makes 
+the sound distorted, which is not good.</p>
+
+<h4 id="Fs"><code>Fs</code></h4>
+<p>You usually pass a second value to <code>sound()</code> as well - <code>Fs</code>, or sample 
+frequency. It's a good idea to define it, as well; 
+otherwise, Matlab plays your sound back at its default sample frequency 
+(8192 Hz), which can kind of screw things up if you don't account for it. 
+Even if you do use the default rate, I also recommend that you save it into a <em>global constant</em>, since 
+you will probably use it in multiple places.</p>
+
+<p><code>Fs</code> should be a 1-by-1 matrix, or a scalar. It does not have to be 
+an integer, but it has to be a value supported by your sound hardware. 
+I typically use 44100 (44.1 KHz), because it results in good sound quality 
+while still being usable on most systems (it's near the upper range of usable 
+values on older computers, but pretty moderate on anything produced in 
+the last few years) (please email all comments to the effect of "why the heck are 
+you using <i>Matlab</i> if you're trying to make high-quality sound?!?" to 
+/dev/null).</p>
+
+<h4 id="bits"><code>Bits</code></h4>
+<p><code>Sound()</code> can also accept another parameter, <code>bits</code>, the number of bits 
+to send to the system sound per sample. <code>Help</code> tells us we 
+should use values of 8 or 16 for this; but I'm going to tell you that 24 
+and 32 might work too. I'm also going to tell you that you don't really 
+need to worry about this one, because I don't.</p>
+
+<h3 id="whatHow">What it does (and how it does it)</h3>
+<p>Let's say you've followed my advice so far - you defined a variable 
+<code>Fs</code> (and, if you're using it in an m-file, as a global 
+variable - remember, Matlab doesn't have constants, so you if you want a 
+global constant, you have to define it as a variable, and be careful not 
+to overwrite it), and somehow gotten data in the -1-+1 range into a column 
+vector <code>y</code>. And now you're wondering, "what do I do?"</p>
+
+<p>Well, by now I really hope you're not. You type in 
+"<code>sound(y,Fs);</code>", and hit enter!</p>
+
+<h4 id="whatitdoes">What it does</h4>
+<p>Matlab plays the column vector <code>y</code>. As a sound. Which... 
+makes sense, right?</p>
+
+<h4 id="howitdoesit">How it does it</h4>
+<p>Each value in <code>y</code> corresponds to an amplitude. A value 
+of 1.0 represents absolute peak, the "loudest" it can be.</p>
+<p><code>Fs</code> tells <code>sound()</code> how often to "play" one of 
+these values; it uses the unit Hz (hertz), or inverse-second (1/s). If you 
+were to use <code>Fs = 1</code>, then <code>sound()</code> would pass one 
+of its entries to the speakers each second. Of course, since the properties of a sound (such as pitch and volume) 
+are determined by the amplitude and how the amplitude changes, and the lower limit of human hearing 
+is around 30 Hz, sending values of <code>y</code> at 1 Hz would result in, 
+at best, a kind of "popping" sound. As a full explanation of the mechanics 
+of sound and waves is beyond this example (and possibly my ability to explain, 
+given my limited understanding of acoustics), you can safely take my word that you'll 
+want a much higher value of <code>Fs</code>.</p>
+
+<p>So, in essence, <code>sound()</code> plays back amplitudes from <code>y</code>, 
+at a frequency of <code>Fs</code> - that is, every <code>1/Fs</code> seconds, 
+it resets the sound-output-amplitude to the current value of <code>y</code>. 
+At a <code>Fs</code> of 44100, this means it's sending 44,100 amplitudes 
+every second! <em>That's a lot!!!</em> The good news is, your computer 
+should handle it well, and this resetting happens frequently enough that 
+you won't notice the "lost" parts in-between (aside - when CD's were new, 
+some audiophiles complained about this kind of "digital" sound, as opposed 
+to the constant/continuous "analog" sound produced by tapes, records, and 
+even radio - but today, nobody really notices the difference). If you'd like to learn more 
+about this, some additional helpful terms (for internet-searching purposes) 
+include Sampling rate, amplitude, and maybe bitrate and digital audio.</p>
+
+<h4 id="whataboutbits">What about <code>bits</code>?</h4>
+<p><code>bits</code> is the third input, the one I haven't told you much about. 
+It sets how many bits of data should be sent with each sample. Matlab 
+seems to default to 16, and suggests that "most platforms support... 8 and 16" 
+You can think of this as a kind of "sample precision" - how many decimal 
+places get sent with each sample. Unless this is really important to you 
+(which, if you're synthesizing sound with MATLAB, it likely isn't), don't 
+worry about it.</p>
+
+<h2 id="quickTry">Quick try-out</h2>
+<p>To try this out quickly, run the following code:</p>
+<code>
+Fs=44100;<br/>
+y=rand(3*Fs,1);<br/>
+sound(y,Fs);<br/>
+</code>
+<p>What do you hear? It should be static - high-pitched static. 
+For a slightly different example, try using <code>randn()</code> instead 
+of <code>rand()</code>; it will sound louder (the normal distribution 
+of <code>randn()</code> has more values near or in excess of 1 than 
+<code>rand()</code> does) but at a lower/more "centered" pitch (this 
+has something to do with the fact that you have both positive and negative 
+values in <code>y</code>).</p>
+
+<h2 id="setup">Setting Up the Data</h2>
+<p>Making static is... nice? Maybe? I don't think it's all that cool, 
+really. What we want, ultimately, is to put together different pitches 
+at different lengths of time, to string them together, and to have them 
+play back. Right now we have... random numbers, making static.</p>
+
+<p>But like most problems, you can't do it all at once. Let's take it one 
+step at a time, and start with making a single pitch</p>
+
+<h3 id="a440">Finding "A 440"</h3>
+<p>The more musically inclined in the audience may recognize the term 
+"A 440." It is a widely accepted definition for a specific pitch, used for tuning in literally every 
+kind of Western or Western-derived music; choral, orchestral, soundtrack, 
+blues, rock. Its definition is as follows: "The frequency of the A above 
+middle C (C4) is 440 Hz." Since all other pitches have pre-defined relations 
+to A (and each other, for that matter), all that is needed to find them 
+is to set a single point.</p>
+
+<p>When I first started working on this example, I actually found this 
+to be the hardest part. Oh, sure, I could easily generate tones on 
+arbitrary frequencies; the problem, I found, was that proper playback 
+depended on <code>Fs</code>. If I changed <code>Fs</code>, I'd have to 
+change something else, too. But before I go on with that, I need to explain 
+a little bit more about sound theory.</p>
+
+<p>By the definitions I will be using here, a "pure tone" is a sine wave 
+with a single frequency. This frequency determines the pitch produced by 
+the sound wave described by the sine wave; and the volume, loudness, or 
+amplitude of that sound wave is also described by the peak altitude of that 
+sine wave (which is constant in our definition of "pure tone"). Thus, 
+to get a tone pitched at A 440, you need a sine wave with a frequency 
+of 440 Hz. To do this, you use an equation like this:</p>
+<p id="eq1"><code>
+y = A*sin(2*π*440*t);
+</code>[Eq. 1]</p>
+<p>Where <code>A</code> is peak amplitude (1 or smaller for Matlab), 
+<code>π</code> is pi, approximately 3.1416; <code>440</code> is the pitch 
+in Hz; and <code>t</code> is time, in seconds.</p>
+
+<p>Believe it or not, this is the most complex equation we will be using. 
+Isn't that cool?</p>
+
+<h4 id="playA440">Quick try-out: playing A440</h4>
+<p>Before we go on, let's use what we've just learned (for good, never 
+evil): let's actually play this note.</p>
+
+<p>Use this code:</p>
+<code>
+Fs=44100;<br />
+t=0:(1/Fs):3;<br />
+y=sin(2*pi*440*t);<br />
+sound(y,Fs);
+</code>
+
+<p>It's just that simple! (Hint: to get it to play longer, replace the 3 
+in the second line with another number, the number of seconds you'd like 
+it to play).</p>
+
+<p>I have an impulse to explain this all here, but you will just have to 
+wait until the proper time and place.</p>
+
+<h3 id="othertones">Finding Other Pitches</h3>
+<p>Creating a single tone, a single pitch, is, in my opinion, an order 
+of magnitude more cool thand creating white noise. Don't you agree?</p>
+
+<p>But it would be even cooler to make any tone we'd like, wouldn't it?</p>
+
+<h4 id="moretheory">A little more on sound and scale theory</h4>
+
+<p>I have grown up using the Western method of defining pitches, and 
+am using it here. Users of other techniques, I am sorry, but I cannot 
+help you.</p>
+<p>Before I go on, I will define some terms that I intend to use for the 
+rest of this section.</p>
+<ul>
+<li>Pitch: a sound associated with a single, unique frequency (i.e. A 440)</li>
+<li>Tone: a set of sounds associated with all octaves of a given pitch (i.e. A, including 440, 220, 110, 880, ...)</li>
+<li>Octave: an interval of two pitches wherein the higher-pitched pitch has exactly double the frequency of the lower one</li>
+<li>Interval: a combination of two pitches</li>
+<li>Chromatic scale: a set of twelve equally-spaced pitches (equally spaced on a logarithmic-base-two scale) between the two pitches in an octave (including the lower pitch, but not the higher one) [I may include, here, a log plot showing the location of different tones in a chromatic scale]</li>
+<li>Half-step: the interval between two adjacent pitches on a chromatic scale.</li>
+<li>Note: A sound of a specified pitch and duration (this definition is specific to this example; usage in the real world varies).</li>
+</ul>
+<p>Let me tell you a bit more about octaves. An octave is an interval; and 
+an interval is a combination of two notes, or the space between their 
+pitches. An octave is a special type of interval - the higher-pitched 
+note in an octave has a frequency that is exactly double the frequency 
+of the lower pitch. In the letter-assigning system, the pitches are given 
+the same letter name as well. For example: we already know that the pitch 
+with a frequency of 440 Hz is A; using what we've just learned about 
+octaves, we now know taht the pitch with a frequency of 880 Hz is also 
+an A, and the one an octave above. We also know that there is another A 
+an octave below at 220 Hz.</p>
+
+<p>We also need a technique for getting tones in-between. The Western 
+chromatic scale is divided into thirteen pitches, including the top and 
+bottom notes of an octave, as well as the eleven pitches in-between. 
+Since the top pitch is the octave of the first pitch, they are considered 
+the same "tone", and hence the top pitch is not really considered part 
+of the chromatic scale. Hence, we have a total of twelve tones.</p>
+
+<p>Now then. Back to the Matlab.</p>
+
+<p>Please note the parenthetical expression in the definition of 
+chromatic scale - specifically the "logarithmic-base-two" part. This is 
+the key to our ability to find pitches that are not intervals of A 440.</p>
+
+<p>We know that we have a total of twelve pitches above A 440 before we 
+"start over" in a different octave; we also know that the highest-pitched 
+one of those is A 880, or A with a frequency of 2*440 Hz. The eleven 
+intervening are "equally spaced on a logarithmic scale." Thus:</p>
+
+<ul>
+<li>The frequency of the A one octave above A 440 is 2<sup>1</sup>*440 Hz = 2<sup>(12/12)</sup>*440 Hz = 880 Hz</li>
+<li>The frequency of the other pitches in-between can be determined in a similar manner.</li>
+<li>For example: the frequency of A# immediately above A 440 is 2<sup>(1/12)</sup>*440 = 466.1638 Hz</li>
+</ul>
+
+<p>So when we define a more general method for determining the frequency 
+of a pitch based on its distance from A 440 on a piano keyboard, we get:</p>
+
+<p id="eq2"><code>
+freq = 440 * 2 ^ (n/12);
+</code>[Eq. 2]</p>
+
+<p>Where <code>freq</code> is the resulting frequency, and <code>n</code> 
+is the number of half-steps away from A 440 the desired pitch is (this can 
+be positive or negative, or even non-integer, as long as it's a real 
+scalar). The derivation of this equation is left as an exercise. Using this, 
+we can easily assign an <code>n</code> to all the other pitches we may want:</p>
+<center>
+<table border="1" id="toneTable">
+<tr><th>Pitch</th><th>n</th></tr>
+<tr><td>C (high):</td>   <td>+3</td></tr>
+<tr><td>B:</td><td>+2</td></tr>
+<tr><td>Bb:</td><td>+1</td></tr>
+<tr><td>A (440):</td><td>0</td></tr>
+<tr><td>Ab:</td><td>-1</td></tr>
+<tr><td>G:</td><td>-2</td></tr>
+<tr><td>F#:</td><td>-3</td></tr>
+<tr><td>F:</td><td>-4</td></tr>
+<tr><td>E:</td><td>-5</td></tr>
+<tr><td>Eb:</td><td>-6</td></tr>
+<tr><td>D:</td><td>-7</td></tr>
+<tr><td>C#:</td><td>-8</td></tr>
+<tr><td>C (middle):</td><td>-9</td></tr>
+</table>
+</center>
+
+<h3 id="time"></h3>
+
+<p>It is also important to make a vector into which you put "time" values 
+- that is, how long since starting each sample is. In the 
+<a href="#playA440">Playing A440 Example</a> section, I gave you this code: </p>
+<code>
+t=0:(1/Fs):3;
+</code>
+
+<p>and this is similar to the code you will be using:</p>
+
+<code>
+t=0:(1/Fs):time;
+</code>
+
+<p>In this case, <code>t</code> returns the vector with all of the time 
+values; <code>Fs</code> is our global constant sound frequency; and 
+<code>time</code> is the duration, in seconds, of the sample that we're 
+in the process of creating</p>
+
+<p>And with this, we have all of the pieces that we need.</p>
+
+<h2 id="puttingtogether">Putting Together the Pieces - playing a scale</h2>
+<p>[My philosophy on teaching Matlab - and anything else of the nature, 
+for that matter - does not involve giving the students the answer. Rather, 
+I prefer to walk them through the process of creating the solution themselves. 
+Once they're done with that, they should have something similar to the 
+example I would have given anyway, and they have been forced to put it 
+all together themselves, thereby garnering at least some of the knowledge 
+I am hoping to impart].</p>
+
+<p>You will want to put your solution into a function m-file - probably 
+a monolithic one, but as I used at least two different functions in mine, 
+you could always break them up into separate files.</p>
+
+<p>You'll only need one global variable - the Fs.</p>
+<p><i>Aside - I intend to explain global variables earlier in the book, 
+and I'll probably do it something like this:</i></p>
+
+<p>To declare a global variable <code>varName</code>, for example, use 
+this line in each function you intend to use it in:</p>
+<code>global varName</code><br />
+<p>Since you should mostly use global variable for constants, you should, 
+somewhere near-by, give it a value:</p>
+<code>varName = 5.67;</code>
+<p>And never use it on the left side of a single equal sign again. 
+Remember, you need to declare a global variable in every function that you 
+use it in; otherwise, it will be treated as a local variable within that function, 
+which can result in your code not working or working incorrectly.</p>
+
+<h3 id="toneFunction">The tone-generating function</h3>
+<p>The next thing you should likely do is go directly to the tone-generating 
+function. I named mine "tone," though you can name yours whatever you like. 
+Mine accepts as inputs a variable "time" (the duration of the tone it is 
+to return, in seconds), and "pitch" (the "n" in <a href="#eq1">equation 1</a>). 
+It returns the vector <code>Y</code>, as described above. Other things that 
+you'll have to do inside this function include generating the vector <code>t</code>, 
+which you can do exactly as described in the last section; and defining 
+the frequency for use in <a href="#eq1">equation 1</a>, which you can do 
+using <a href="#eq2">equation 2</a>.</p>
+
+<h3 id="mainFunction">Back to the main function</h3>
+<p>The <a href="#toneFunction">tone-generating function</a> is your basic 
+building-block for creating sounds; but the main function (in my case, called 
+scale2) is the framework into which those blocks are laid. The overall tasks 
+that you wish to accomplish with it include:</p>
+<ul>
+<li>Basic set-up (global variables, etc).</li>
+<li>Retrieving notes (of specified pitches and durations) from the tone-generating function</li>
+<li>See to it that they end up in a single vector</li>
+<li>Send this vector (and other appropriate information) to <code>sound()</code></li>
+</ul>
+
+<p>There is a lot of latitude for how you implement this, but you must 
+tie it in with how you set up the tone-generating function. In my 
+implementation, I did the basic set-up first (including, in the comments, 
+the <a href="#toneTable">tone table</a>); then, I defined a duration (0.5 seconds) 
+that I wanted all of my notes to be. I proceded to store notes in vectors 
+with names like "C," "D," "G," and "C2" (for the top octave). I created 8 
+of them, ranging from C up to G, then A and B, and finally C2. "C" corresponded 
+with "middle C," while "C2" was the one an octave above.</p>
+
+<p>Penultimately, I smashed them all into a single vector. This was done 
+in a fairly straightforward way: <code>Y = [C D E ... B C2];</code> Finally, 
+I passed <code>Y</code> and <code>Fs</code> to <code>sound()</code>, and 
+Matlab did the rest.</p>
+
+<h3 id="tips">Tips</h3>
+<p>You may be tempted to do several steps using a for-loop. This is 
+totally logical, and makes a lot of sense - you're doing a repetitive 
+operation on each element of a vector, incrementing by one each time... 
+In practice, however, this doesn't work out as well as you might hope. 
+Why is this? Simply put - it's a pretty freakin' huge amount of data, 
+and when I tried doing it this way, it took longer for Matlab to do 
+all the set-up than it did to listen to the output (and every time I ran 
+it, I had to wait the whole time again!)</p>
+
+<p>In order to speed up execution, I have already hinted at the 
+kind of things you should do. Namely, you should take advantage of the fact 
+that Matlab is designed around working with vectors and matrices. <a href="#eq1">Equation 1</a>, 
+for example, can be used as-is (assuming you've appropriately defined the vector <code>t</code> 
+beforehand, and eliminated/defined/matlab-friendly-ified all the variables), 
+rather than cycling through values in <code>t(ii)</code> and 
+assigning the output to values in <code>Y(ii)</code>.</p>
+
+<p>You should address any errors that Matlab throws you the same way 
+you always do - check the line numbers, use the help menu, and use Google. Check 
+for the stupid mistakes, too (like undefined variables, overwritten variables, or misspellings).</p>
+
+<h2 id="extensions">Extensions</h2>
+
+<p>Hopefully by the time you get this far, you have a working implementation 
+that can play a scale. What next?</p>
+
+<p>Try writing a song. Something simple, at first (I coded up "Happy Birthday" 
+once). The main difference is that you may have differing durations 
+for your notes, and you may require pauses ("rests"). Rests can be added 
+by putting in several 0's - it should be simple enough to write a sub-function 
+to take care of this.</p>
+
+<p>Try this: modify equation 1 to look like this:</p>
+<p id="eq3"><code>Y = sign(sin(2*pi*freq*t));</code></p>
+<p>Play your scale, and tell me the difference. Modify your 
+function to return the value of <code>Y</code> to a vector, and inspect 
+it both with and without this modification; what's the difference?</p>
+
+<p>How about more than one note at once? Chords, even? You can do this 
+several ways - one sound for each side in stereo sound, or add them all up 
+and divide by 3 (or 4, or 5, or however many notes you have total); or pull 
+up the documentation for <code>soundsc();</code> or find some other method 
+I haven't thought of.</p>
+
+<p>A most interesting one would be to synthesize the sounds of various 
+instruments using harmonic overtones.</p>
+
+<p>Finally, it is possible to export Matlab-created sounds to several sound 
+formats (see documentation on <code>wavwrite</code> and <code>auwrite</code>. 
+If you put together a really stellar piece using only Matlab, export 
+it to a .wav file, email it to me, and I judge it to be truly superior, 
+I'll post it on my website and you'll get a prize; also, if you want 
+to send your resulting "music" to someone who doesn't have Matlab, this 
+would be a good way to do it.</p>
+
+<h2 id="conclusion">Conclusions</h2>
+<p>We have learned a bit about sound, and sound waves. We have learned to 
+use Matlab to sythesize and play them, and have an implementation that 
+plays a scale. We can, with a little work, use this to play any song 
+we choose to put our minds to, and can use it as the basis for several 
+other interesting investigations as well.</p>
+
+<p>I hope you learned something, and enjoyed yourself, [<i>and now on to the next chapter?</i>]</p>
+
+<div id="bottom" style="border: thin solid">
+<p>
+Thank you for taking the time to read through this example-chapter. My 
+implementation of the example worked out here can be found at 
+<a href="./scale2.html">scale2.html</a>, or as a downloadable .m file 
+at <a href="./scale2.m">scale2.m</a>. Please send any extended comments 
+to <a href="mailto:nleep3@gmail.com">nleep3@gmail.com</a>, and don't forget 
+to <a href="https://spreadsheets.google.com/viewform?hl=en&formkey=dGpueE9aSjhTOC15X01QbWRRcVBUb2c6MQ#gid=0">
+take the survey!</a>
+
+</p>
+<p>
+Also, maybe take a look at <a href="https://docs.google.com/document/edit?id=1clM1F2UVzJVHW1Qs6dFFnXHVyiHbO65D3Gryfvptp5c&hl=en&authkey=CIft_d8J">
+my tentative outline for the book as a whole
+</a> and tell me what you think. Thanks!
+</p>
+
+<p>-Nicholas E Leep III, EIT</p>
+
+</div>
+
+</body>
+</html>

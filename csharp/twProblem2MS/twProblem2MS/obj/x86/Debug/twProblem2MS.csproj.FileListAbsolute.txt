@@ -1,0 +1,5 @@
+E:\Projects\programming\csharp\twProblem2MS\twProblem2MS\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Projects\programming\csharp\twProblem2MS\twProblem2MS\bin\Debug\twProblem2MS.exe
+E:\Projects\programming\csharp\twProblem2MS\twProblem2MS\bin\Debug\twProblem2MS.pdb
+E:\Projects\programming\csharp\twProblem2MS\twProblem2MS\obj\x86\Debug\twProblem2MS.exe
+E:\Projects\programming\csharp\twProblem2MS\twProblem2MS\obj\x86\Debug\twProblem2MS.pdb

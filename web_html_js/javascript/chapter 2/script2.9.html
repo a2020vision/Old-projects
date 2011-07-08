@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>My JavaScript page</title>
+</head>
+<body>
+<script type="text/javascript">
+if (navigator.appName == "Netscape") {
+	document.write("you're running a Netscape browser")
+}
+else { if (navigator.appName == "Microsoft Internet Explorer") {
+		alert("You're using IE. You should switch now to Firefox or something better")
+		window.location="http://www.mozilla.com"
+	}
+	else {
+		document.write("you're using something not-Netscape and not-IE")
+	}
+}
+</script>
+</body>
+</html>

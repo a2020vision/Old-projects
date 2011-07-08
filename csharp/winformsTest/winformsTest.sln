@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winformsTest", "winformsTest\winformsTest.csproj", "{10DCF5F8-AB2E-4F75-9CB9-6E73F193EB6A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10DCF5F8-AB2E-4F75-9CB9-6E73F193EB6A}.Debug|x86.ActiveCfg = Debug|x86
+		{10DCF5F8-AB2E-4F75-9CB9-6E73F193EB6A}.Debug|x86.Build.0 = Debug|x86
+		{10DCF5F8-AB2E-4F75-9CB9-6E73F193EB6A}.Release|x86.ActiveCfg = Release|x86
+		{10DCF5F8-AB2E-4F75-9CB9-6E73F193EB6A}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = winformsTest\winformsTest.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabWidth = 4
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/plain
+		$2.scope = text/plain
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,4 @@
+This file contains some text.
+It's not very interesting text, but it is text.
+You can create a document with text too!
+One	Two	Three	Four

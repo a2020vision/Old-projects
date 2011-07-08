@@ -1,0 +1,11 @@
+#!/usr/bin/perl -w
+$numArgs = $#ARGV + 1;
+if ($numArgs < 1) {
+	print "Thank who, again?\n"
+} elsif (($numArgs == 1) && (lc($ARGV[0]) eq 'you')) {
+	print "You\'re welcome\!\n";
+} else {
+	foreach $word (@ARGV) {
+		print "Thanks, $word!\n";
+	}
+}
